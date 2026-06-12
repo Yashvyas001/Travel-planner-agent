@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Planner Agent - AI-Powered Trip Planning</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">✈️</span>
+                <h1>Travel Planner Agent</h1>
+            </div>
+            <p class="tagline">Powered by IBM Granite & IBM Cloud</p>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h2>Plan Your Next Adventure</h2>
+            <p>Let AI help you create the perfect travel itinerary</p>
+        </section>
+
+        <!-- Form Section -->
+        <section class="form-section">
+            <div class="form-container">
+                <h3>Travel Details</h3>
+                <form id="travelForm" class="travel-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="sourceLocation">From (Source Location)</label>
+                            <input type="text" id="sourceLocation" name="sourceLocation" 
+                                   placeholder="Your current city" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="destination">To (Destination)</label>
+                            <input type="text" id="destination" name="destination" 
+                                   placeholder="Where do you want to go?" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="days">Number of Days</label>
+                            <input type="number" id="days" name="days" min="1" max="30" 
+                                   placeholder="e.g., 7" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="budget">Budget (USD)</label>
+                            <input type="number" id="budget" name="budget" min="100" step="50"
+                                   placeholder="e.g., 2000" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="travelType">Travel Type</label>
+                            <select id="travelType" name="travelType" required>
+                                <option value="">Select travel type</option>
+                                <option value="Solo">Solo 🧑</option>
+                                <option value="Family">Family 👨‍👩‍👧‍👦</option>
+                                <option value="Friends">Friends 👫</option>
+                                <option value="Couple">Couple 💑</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Interests (Select multiple)</label>
+                        <div class="checkboxes">
+                            <label><input type="checkbox" name="interests" value="Adventure"> Adventure 🏔️</label>
+                            <label><input type="checkbox" name="interests" value="Nature"> Nature 🌿</label>
+                            <label><input type="checkbox" name="interests" value="Food"> Food 🍲</label>
+                            <label><input type="checkbox" name="interests" value="Historical"> Historical 🏛️</label>
+                            <label><input type="checkbox" name="interests" value="Religious"> Religious 🙏</label>
+                            <label><input type="checkbox" name="interests" value="Beach"> Beach 🏖️</label>
+                            <label><input type="checkbox" name="interests" value="Shopping"> Shopping 🛍️</label>
+                            <label><input type="checkbox" name="interests" value="Art"> Art 🎨</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Dietary Preferences (Select multiple)</label>
+                        <div class="checkboxes">
+                            <label><input type="checkbox" name="dietary_preferences" value="Vegetarian"> Vegetarian</label>
+                            <label><input type="checkbox" name="dietary_preferences" value="Vegan"> Vegan</label>
+                            <label><input type="checkbox" name="dietary_preferences" value="Non-Vegetarian"> Non-Vegetarian</label>
+                            <label><input type="checkbox" name="dietary_preferences" value="Halal"> Halal</label>
+                            <label><input type="checkbox" name="dietary_preferences" value="Kosher"> Kosher</label>
+                            <label><input type="checkbox" name="dietary_preferences" value="Gluten-Free"> Gluten-Free</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <span>Generate My Travel Plan</span>
+                        <span class="spinner" id="spinner"></span>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Loading Section -->
+        <div id="loadingSection" class="loading-section" style="display: none;">
+            <div class="loader">
+                <div class="loader-circle"></div>
+                <p>Planning your adventure...</p>
+                <p class="loader-subtitle">AI agents are working on your travel plan</p>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="results-section" style="display: none;">
+            <!-- Summary Card -->
+            <div class="summary-card">
+                <h3>Trip Summary</h3>
+                <div class="summary-content" id="summaryContent"></div>
+            </div>
+
+            <!-- Tabs for different sections -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="itinerary">📅 Itinerary</button>
+                <button class="tab-btn" data-tab="budget">💰 Budget</button>
+                <button class="tab-btn" data-tab="hotels">🏨 Hotels</button>
+                <button class="tab-btn" data-tab="weather">🌤️ Weather</button>
+                <button class="tab-btn" data-tab="food">🍽️ Food</button>
+            </div>
+
+            <!-- Itinerary Tab -->
+            <div class="tab-content" id="itinerary-tab">
+                <div class="card-grid" id="itineraryContent"></div>
+            </div>
+
+            <!-- Budget Tab -->
+            <div class="tab-content" id="budget-tab" style="display: none;">
+                <div id="budgetContent"></div>
+            </div>
+
+            <!-- Hotels Tab -->
+            <div class="tab-content" id="hotels-tab" style="display: none;">
+                <div class="hotels-hero">
+                    <div>
+                        <h3>🏨 Handpicked Hotels & Luxury Stays</h3>
+                        <p style="opacity:0.9; max-width: 600px;">Featured luxury stays, viral dhabas and must-see places near your destination. Click "Open Map" for live location search.</p>
+                    </div>
+                    <div class="hotel-cta">
+                        <button id="openMapBtn" class="btn-export">🗺️ Open Map</button>
+                    </div>
+                </div>
+                <div id="hotelsContent"></div>
+            </div>
+
+            <!-- Weather Tab -->
+            <div class="tab-content" id="weather-tab" style="display: none;">
+                <div id="weatherContent"></div>
+            </div>
+
+            <!-- Food Tab -->
+            <div class="tab-content" id="food-tab" style="display: none;">
+                <div id="foodContent"></div>
+            </div>
+
+            <!-- Export Options -->
+            <div class="export-section">
+                <button id="exportPDF" class="btn-export">📥 Download PDF</button>
+                <button id="exportJSON" class="btn-export">💾 Download JSON</button>
+                <button id="printPlan" class="btn-export">🖨️ Print</button>
+            </div>
+        </section>
+
+        <!-- Error Section -->
+        <div id="errorSection" class="error-section" style="display: none;">
+            <p id="errorMessage"></p>
+            <button onclick="location.reload()" class="btn-retry">Try Again</button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>🧳 Travel Planner Agent | Powered by IBM Granite & IBM Cloud Lite</p>
+        <p>© 2026 AICTE Problem Statement #5 | Made with ❤️</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
